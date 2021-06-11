@@ -1,7 +1,12 @@
 const inquirer = require("inquirer");
+const DB = require("./db/DB");
 
 const init = async () => {
   let inProgress = true;
+
+  const db = new DB("company_db")
+
+  await db.start()
 
   const question = {
     type: "list",
@@ -62,7 +67,6 @@ const init = async () => {
       }
       if (action === "updateEmployeeRole") {
       }
-      
     }
   }
 };
