@@ -71,6 +71,41 @@ const init = async () => {
         console.log("Department added");
       }
       if (action === "addRole") {
+        const departmentsQuery = "SELECT * FROM department";
+        const departments = await db.query(departmentsQuery);
+
+        const departmentChoices = departments.map((department) => {
+            return {
+              name: department.name,
+              value: department.id,
+            };
+        })
+
+        const questions = [
+          {
+            type: "list",
+            message: "Select the department the role belongs to:",
+            name: "department_id",
+            choices: departmentChoices,
+          },
+          {
+            type: "input",
+            message: "Enter the title of the role:",
+            name: "title",
+          },
+          {
+            type: "input",
+            message: "Enter the salary of the role:",
+            name: "salary",
+          },
+        ];
+
+        const answers = await inquirer.prompt(questions)
+
+        const query = "INSERT INTO ?? SET ?";
+        await db.parameterisedQuery(query, ["role", answers]);
+
+        console.log("Role added");
       }
       if (action === "addEmployee") {
       }
