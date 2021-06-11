@@ -48,7 +48,21 @@ const init = async () => {
     if (action === "exit") {
       inProgress = false;
     } else {
-      console.log(action);
+      if (action === "addDepartment") {
+      }
+      if (action === "addRole") {
+      }
+      if (action === "addEmployee") {
+      }
+      if (action === "viewDepartment") {
+      }
+      if (action === "viewRole") {
+      }
+      if (action === "viewEmployee") {
+      }
+      if (action === "updateEmployeeRole") {
+      }
+      
     }
   }
 };
