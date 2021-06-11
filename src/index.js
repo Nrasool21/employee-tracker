@@ -75,11 +75,11 @@ const init = async () => {
         const departments = await db.query(departmentsQuery);
 
         const departmentChoices = departments.map((department) => {
-            return {
-              name: department.name,
-              value: department.id,
-            };
-        })
+          return {
+            name: department.name,
+            value: department.id,
+          };
+        });
 
         const questions = [
           {
@@ -100,7 +100,7 @@ const init = async () => {
           },
         ];
 
-        const answers = await inquirer.prompt(questions)
+        const answers = await inquirer.prompt(questions);
 
         const query = "INSERT INTO ?? SET ?";
         await db.parameterisedQuery(query, ["role", answers]);
@@ -108,6 +108,73 @@ const init = async () => {
         console.log("Role added");
       }
       if (action === "addEmployee") {
+        const rolesQuery = "SELECT * FROM role";
+        const roles = await db.query(rolesQuery);
+
+        const roleChoices = roles.map((role) => {
+          return {
+            name: role.title,
+            value: role.id,
+          };
+        });
+
+        const employeesQuery = "SELECT * FROM employee";
+        const employees = await db.query(employeesQuery);
+
+        const employeeChoices = employees.map((employee) => {
+          return {
+            name: `${employee.first_name} ${employee.last_name}`,
+            value: employee.id,
+          };
+        });
+
+        const questions = [
+          {
+            type: "list",
+            message: "Select the role the employee belongs to:",
+            name: "role_id",
+            choices: roleChoices,
+          },
+          {
+            type: "input",
+            message: "Enter the first name of the employee:",
+            name: "first_name",
+          },
+          {
+            type: "input",
+            message: "Enter the last name of the employee:",
+            name: "last_name",
+          },
+          {
+            type: "confirm",
+            message: "Do you want to add a manager to this employee?",
+            name: "hasManager",
+          },
+          {
+            type: "list",
+            message: "Select the manager of the employee:",
+            name: "manager_id",
+            choices: employeeChoices,
+            when: (answers) => {
+              return answers.hasManager;
+            },
+          },
+        ];
+
+        const answers = await inquirer.prompt(questions);
+
+        const query = "INSERT INTO ?? SET ?";
+        await db.parameterisedQuery(query, [
+          "employee",
+          {
+            first_name: answers.first_name,
+            last_name: answers.last_name,
+            role_id: answers.role_id,
+            manager_id: answers.manager_id || null,
+          },
+        ]);
+
+        console.log("Employee added");
       }
       if (action === "viewDepartment") {
         const query = "SELECT * FROM department";
@@ -125,6 +192,53 @@ const init = async () => {
         console.table(sqlData);
       }
       if (action === "updateEmployeeRole") {
+        const rolesQuery = "SELECT * FROM role";
+        const roles = await db.query(rolesQuery);
+
+        const roleChoices = roles.map((role) => {
+          return {
+            name: role.title,
+            value: role.id,
+          };
+        });
+
+        const employeesQuery = "SELECT * FROM employee";
+        const employees = await db.query(employeesQuery);
+
+        const employeeChoices = employees.map((employee) => {
+          return {
+            name: `${employee.first_name} ${employee.last_name}`,
+            value: employee.id,
+          };
+        });
+
+        const questions = [
+          {
+            type: "list",
+            message: "Select the employee:",
+            name: "id",
+            choices: employeeChoices,
+          },
+          {
+            type: "list",
+            message: "Select the role you want to update to:",
+            name: "role_id",
+            choices: roleChoices,
+          },
+        ];
+
+        const answers = await inquirer.prompt(questions);
+
+        const query = "UPDATE ?? SET ? WHERE id=?";
+        await db.parameterisedQuery(query, [
+          "employee",
+          {
+            role_id: answers.role_id,
+          },
+          answers.id,
+        ]);
+
+        console.log("Role updated for employee");
       }
     }
   }
